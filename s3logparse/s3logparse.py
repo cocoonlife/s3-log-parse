@@ -114,6 +114,6 @@ def tsv_outputter(output_stream):
         # convert datetime field to iso format
         fields = list(log_fields)
         fields[2] = fields[2].isoformat()
-        csv_writer.writerow(log_fields)
+        csv_writer.writerow(fields)
         
     return write_output

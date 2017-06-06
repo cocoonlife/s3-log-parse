@@ -3,14 +3,6 @@ from datetime import datetime
 import csv
 
 
-def char_iter(line):
-    """
-    Iterate over each character in a string
-    """
-    line_len = len(line)
-    return (line[l] for l in range(line_len))
-
-
 def _consume_unquoted_text_field(first_char, ch_iter):
     """
     Raw text field
@@ -51,7 +43,7 @@ def raw_fields(line):
     """
     Iterate through the raw text of each field in a log line
     """
-    line_chars = char_iter(line)
+    line_chars = (c for c in line)
     while True:
         try:
             first_char = next(line_chars)
@@ -115,5 +107,5 @@ def tsv_outputter(output_stream):
         fields = list(log_fields)
         fields[2] = fields[2].isoformat()
         csv_writer.writerow(fields)
-        
+
     return write_output

@@ -14,14 +14,14 @@ def raw_fields(line):
         except StopIteration:
             break
         if first_char == '[':
-            yield ''.join(list(takewhile(lambda c: c != ']', line_chars)))
+            yield ''.join(takewhile(lambda c: c != ']', line_chars))
             next(line_chars)
         elif first_char == '"':
-            yield ''.join(list(takewhile(lambda c: c != '"', line_chars)))
+            yield ''.join(takewhile(lambda c: c != '"', line_chars))
             next(line_chars)
         else:
-            yield ''.join(
-                [first_char] + list(takewhile(lambda c: c != ' ', line_chars))
+            yield first_char + ''.join(
+                list(takewhile(lambda c: c != ' ', line_chars))
             )
 
 

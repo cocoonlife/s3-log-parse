@@ -29,16 +29,6 @@ class FieldSeparatorTests(TestCase):
             'hello world'
         )
 
-    def test_escaped_quoted_string(self):
-        """
-        Check that escaped quotes are handled OK
-        """
-        log_line = r'hello "hello \"world\"" world'
-        self.assertEqual(
-            list(s3logparse.raw_fields(log_line))[1],
-            'hello "world"'
-        )
-
     def test_date_string(self):
         """
         Test that a date delimited by square brakets is correctly handled

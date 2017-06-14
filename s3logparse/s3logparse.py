@@ -3,32 +3,6 @@ from datetime import datetime
 import csv
 
 
-def _consume_date_field(ch_iter):
-    """
-    Date field
-    """
-    field = ""
-    for ch in takewhile(lambda c: c != ']', ch_iter):
-        field = field + ch
-    next(ch_iter)  # throw away next character
-    return field
-
-
-def _consume_quoted_text_field(ch_iter):
-    """
-    Consume a quoted text field
-    """
-    field = ""
-    for ch in takewhile(lambda c: c != '"', ch_iter):
-        if ch == '\\':
-            # in the case of an escape sequence move on one character
-            field = field + next(ch_iter)
-        else:
-            field = field + ch
-    next(ch_iter)  # throw away next character
-    return field
-
-
 def raw_fields(line):
     """
     Iterate through the raw text of each field in a log line
@@ -40,10 +14,11 @@ def raw_fields(line):
         except StopIteration:
             break
         if first_char == '[':
-            # assume date is never null
-            yield _consume_date_field(line_chars)
+            yield ''.join(list(takewhile(lambda c: c != ']', line_chars)))
+            next(line_chars)
         elif first_char == '"':
-            yield _consume_quoted_text_field(line_chars)
+            yield ''.join(list(takewhile(lambda c: c != '"', line_chars)))
+            next(line_chars)
         else:
             yield ''.join(
                 [first_char] + list(takewhile(lambda c: c != ' ', line_chars))

@@ -3,16 +3,6 @@ from datetime import datetime
 import csv
 
 
-def _consume_unquoted_text_field(first_char, ch_iter):
-    """
-    Raw text field
-    """
-    field = first_char
-    for ch in takewhile(lambda c: c != ' ', ch_iter):
-        field = field + ch
-    return field
-
-
 def _consume_date_field(ch_iter):
     """
     Date field
@@ -55,7 +45,9 @@ def raw_fields(line):
         elif first_char == '"':
             yield _consume_quoted_text_field(line_chars)
         else:
-            yield _consume_unquoted_text_field(first_char, line_chars)
+            yield ''.join(
+                [first_char] + list(takewhile(lambda c: c != ' ', line_chars))
+            )
 
 
 def _row_inflators():

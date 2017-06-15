@@ -1,6 +1,7 @@
 import argparse
 from . import s3logparse
 import sys
+import csv
 
 
 def main():
@@ -16,8 +17,5 @@ def main():
     )
     args = argparser.parse_args()
 
-    line_parser = s3logparse.get_line_parser()
-    outputter = s3logparse.tsv_outputter(sys.stdout)
-
-    for line in args.infile.readlines():
-        outputter(line_parser(line.rstrip()))
+    tsv_writer = csv.writer(sys.stdout, dialect=csv.excel_tab)
+    tsv_writer.writerows(s3logparse.parse_lines(args.infile.readlines()))

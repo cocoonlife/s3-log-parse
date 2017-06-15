@@ -46,12 +46,14 @@ class LineParserTest(TestCase):
     """
 
     def setUp(self):
-        log_parser = s3logparse.get_line_parser()
-        self.log_fields = log_parser('79a59df900b949e55d96a1e698fbacedfd6e09d9\
+        log_stream = s3logparse.parse_lines([
+            '79a59df900b949e55d96a1e698fbacedfd6e09d9\
 8eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:00:38 +0000] 192.0.2.3 79a59\
 df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 3E57427F3EXAMPLE \
 REST.GET.VERSIONING - "GET /mybucket?versioning HTTP/1.1" 200 - 113 - 7 - "-" \
-"S3Console/0.4" -')
+"S3Console/0.4" -'
+        ])
+        self.log_fields = next(log_stream)
 
     def test_date_field(self):
         """

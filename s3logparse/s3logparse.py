@@ -1,6 +1,5 @@
 from itertools import takewhile, chain
 from datetime import datetime
-import csv
 
 
 def raw_fields(line):
@@ -34,6 +33,7 @@ def shift_string_fields(fields, n):
 def shift_int_fields(fields, n):
     for _ in range(n):
         i = next(fields)
+        # for numeric fields "-" is used for 0
         yield 0 if i == '-' else int(i)
 
 
@@ -43,44 +43,22 @@ def shift_date_fields(fields, n):
         yield datetime.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
 
 
-def typed_fields(field_iter):
+def parse_lines(line_iter):
     """
-    An iterator over each field converted to relevant python type
+    Accept an iterator that provides log lines and return an iterator which
+    gives back tuples of log fields in the appropriate python datatype
     """
-    return chain.from_iterable([
-        shift_string_fields(field_iter, 2),
-        shift_date_fields(field_iter, 1),
-        shift_string_fields(field_iter, 6),
-        shift_int_fields(field_iter, 1),
-        shift_string_fields(field_iter, 1),
-        shift_int_fields(field_iter, 4),
-        shift_string_fields(field_iter, 3)
-    ])
-
-
-def get_line_parser():
-    """
-    Return a function that can parse a single log line and return a tuple of
-    log line elements of the correct type
-    """
-
-    def consume_line(line):
-        # define a generator that inflates each field
-        return tuple(typed_fields(raw_fields(line)))
-
-    return consume_line
-
-
-def tsv_outputter(output_stream):
-    """
-    Return a function that serializes a tuple of log line fields
-    """
-    csv_writer = csv.writer(output_stream, dialect=csv.excel_tab)
-
-    def write_output(log_fields):
-        # convert datetime field to iso format
-        fields = list(log_fields)
-        fields[2] = fields[2].isoformat()
-        csv_writer.writerow(fields)
-
-    return write_output
+    # define a generator that inflates each field
+    for line in line_iter:
+        field_iter = raw_fields(line.rstrip())
+        # unpack each field into appropriate data type
+        row = tuple(chain.from_iterable([
+            shift_string_fields(field_iter, 2),
+            shift_date_fields(field_iter, 1),
+            shift_string_fields(field_iter, 6),
+            shift_int_fields(field_iter, 1),
+            shift_string_fields(field_iter, 1),
+            shift_int_fields(field_iter, 4),
+            shift_string_fields(field_iter, 3)
+        ]))
+        yield row

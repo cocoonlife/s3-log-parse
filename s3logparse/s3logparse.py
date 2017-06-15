@@ -1,4 +1,4 @@
-from itertools import takewhile
+from itertools import takewhile, chain
 from datetime import datetime
 import csv
 
@@ -25,26 +25,37 @@ def raw_fields(line):
             )
 
 
-def _row_inflators():
-    # return a list of functions which can each be used to modify each element
-    # of a log line
-    def str_inflator(s):
-        return None if s == '-' else s
+def shift_string_fields(fields, n):
+    for _ in range(n):
+        s = next(fields)
+        yield None if s == '-' else s
 
-    def int_inflator(i):
-        return 0 if i == '-' else int(i)
 
-    def dt_inflator(d):
-        return datetime.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
+def shift_int_fields(fields, n):
+    for _ in range(n):
+        i = next(fields)
+        yield 0 if i == '-' else int(i)
 
-    # most of the 18 cols are strings so prefil with str inflator
-    inflators = [str_inflator] * 18
-    # third column is a date
-    inflators[2] = dt_inflator
-    # numeric fields, all integers
-    for i in [9, 11, 12, 13, 14]:
-        inflators[i] = int_inflator
-    return inflators
+
+def shift_date_fields(fields, n):
+    for _ in range(n):
+        d = next(fields)
+        yield datetime.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
+
+
+def typed_fields(field_iter):
+    """
+    An iterator over each field converted to relevant python type
+    """
+    return chain.from_iterable([
+        shift_string_fields(field_iter, 2),
+        shift_date_fields(field_iter, 1),
+        shift_string_fields(field_iter, 6),
+        shift_int_fields(field_iter, 1),
+        shift_string_fields(field_iter, 1),
+        shift_int_fields(field_iter, 4),
+        shift_string_fields(field_iter, 3)
+    ])
 
 
 def get_line_parser():
@@ -52,13 +63,10 @@ def get_line_parser():
     Return a function that can parse a single log line and return a tuple of
     log line elements of the correct type
     """
-    inflators = _row_inflators()
 
     def consume_line(line):
         # define a generator that inflates each field
-        field_iter = (inflators[i](f) for i, f in enumerate(raw_fields(line)))
-        # return a tuple that exhausts the genrator
-        return tuple(field_iter)
+        return tuple(typed_fields(raw_fields(line)))
 
     return consume_line
 

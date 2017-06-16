@@ -18,4 +18,4 @@ def main():
     args = argparser.parse_args()
 
     tsv_writer = csv.writer(sys.stdout, dialect=csv.excel_tab)
-    tsv_writer.writerows(s3logparse.parse_lines(args.infile.readlines()))
+    tsv_writer.writerows(s3logparse.parse_to_tuples(args.infile.readlines()))

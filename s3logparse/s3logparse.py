@@ -1,5 +1,14 @@
 from itertools import takewhile, chain
 from datetime import datetime
+from collections import namedtuple
+
+
+LogLine = namedtuple('LogLine', [
+    'bucket_owner', 'bucket', 'timestamp', 'remote_ip', 'requester',
+    'request_id', 'operation', 's3_key', 'request_uri', 'status_code',
+    'error_code', 'bytes_sent', 'object_size', 'total_time',
+    'turn_around_time', 'referrer', 'user_agent', 'version_id'
+])
 
 
 def raw_fields(line):
@@ -21,6 +30,9 @@ def raw_fields(line):
 
 
 def shift_string_fields(fields, n):
+    """
+    Process n string fields and convert to None if they're empty
+    """
     for _ in range(n):
         s = next(fields)
         yield None if s == '-' else s
@@ -39,7 +51,7 @@ def shift_date_fields(fields, n):
         yield datetime.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
 
 
-def parse_lines(line_iter):
+def parse_to_tuples(line_iter):
     """
     Accept an iterator that provides log lines and return an iterator which
     gives back tuples of log fields in the appropriate python datatype
@@ -58,3 +70,12 @@ def parse_lines(line_iter):
             shift_string_fields(field_iter, 3)
         ]))
         yield row
+
+
+def parse_log_lines(line_iter):
+    """
+    Parse log lines from an iterable and return LogLine objects with
+    appropriate accessors
+    """
+    for line_tuple in parse_to_tuples(line_iter):
+        yield LogLine(*line_tuple)

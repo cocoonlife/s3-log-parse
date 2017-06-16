@@ -40,13 +40,13 @@ class FieldSeparatorTests(TestCase):
         )
 
 
-class LineParserTest(TestCase):
+class LineParserTupleTest(TestCase):
     """
-    Test parsing a single line works OK
+    Test parsing a single line with the raw tuple parse works ok
     """
 
     def setUp(self):
-        log_stream = s3logparse.parse_lines([
+        log_stream = s3logparse.parse_to_tuples([
             '79a59df900b949e55d96a1e698fbacedfd6e09d9\
 8eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:00:38 +0000] 192.0.2.3 79a59\
 df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 3E57427F3EXAMPLE \
@@ -102,3 +102,91 @@ REST.GET.VERSIONING - "GET /mybucket?versioning HTTP/1.1" 200 - 113 - 7 - "-" \
             [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1]
         ))
         self.assertEqual(none_fields, [None] * 4)
+
+
+class LogLineParserTests(TestCase):
+
+    def test_attributes(self):
+        """
+        The attributes of the LogLine named tuple are as expected
+        """
+        log_stream = s3logparse.parse_log_lines([
+            '79a59df900b949e55d96a1e698fbacedfd6e09d9\
+8eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:00:38 +0000] 192.0.2.3 79a59\
+df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 3E57427F3EXAMPLE \
+REST.GET.VERSIONING - "GET /mybucket?versioning HTTP/1.1" 200 - 113 - 7 - "-" \
+"S3Console/0.4" -'
+        ])
+        log_line = next(log_stream)
+        self.assertEqual(
+            log_line.bucket_owner,
+            '79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be'
+        )
+        self.assertEqual(
+            log_line.bucket,
+            'mybucket'
+        )
+        self.assertEqual(
+            log_line.timestamp.isoformat(),
+            '2014-02-06T00:00:38+00:00'
+        )
+        self.assertEqual(
+            log_line.remote_ip,
+            '192.0.2.3'
+        )
+        self.assertEqual(
+            log_line.requester,
+            '79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be'
+        )
+        self.assertEqual(
+            log_line.request_id,
+            '3E57427F3EXAMPLE'
+        )
+        self.assertEqual(
+            log_line.operation,
+            'REST.GET.VERSIONING'
+        )
+        self.assertEqual(
+            log_line.s3_key,
+            None
+        )
+        self.assertEqual(
+            log_line.request_uri,
+            'GET /mybucket?versioning HTTP/1.1'
+        )
+        self.assertEqual(
+            log_line.status_code,
+            200
+        )
+        self.assertEqual(
+            log_line.error_code,
+            None
+        )
+        self.assertEqual(
+            log_line.bytes_sent,
+            113
+        )
+        self.assertEqual(
+            log_line.object_size,
+            0
+        )
+        self.assertEqual(
+            log_line.total_time,
+            7
+        )
+        self.assertEqual(
+            log_line.turn_around_time,
+            0
+        )
+        self.assertEqual(
+            log_line.referrer,
+            None
+        )
+        self.assertEqual(
+            log_line.user_agent,
+            "S3Console/0.4"
+        )
+        self.assertEqual(
+            log_line.version_id,
+            None
+        )

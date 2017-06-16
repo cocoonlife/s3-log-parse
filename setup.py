@@ -22,5 +22,6 @@ setup(
         'Development Status :: 4 - Beta'
     ],
     setup_requires=['nose>=1.0', 'flake8>=3.3.0'],
+    install_requires=['pytz'],
     test_suite="tests",
 )

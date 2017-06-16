@@ -1,6 +1,7 @@
 from itertools import takewhile, chain
 from datetime import datetime
 from collections import namedtuple
+import pytz
 
 
 LogLine = namedtuple('LogLine', [
@@ -48,7 +49,13 @@ def shift_int_fields(fields, n):
 def shift_date_fields(fields, n):
     for _ in range(n):
         d = next(fields)
-        yield datetime.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
+        try:
+            yield datetime.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
+        except ValueError:
+            # python2 doesn't understand %z modifier
+            # crude fallback
+            dt = datetime.strptime(d, '%d/%b/%Y:%H:%M:%S +0000')
+            yield dt.replace(tzinfo=pytz.utc)
 
 
 def parse_to_tuples(line_iter):

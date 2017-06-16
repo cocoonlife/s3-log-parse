@@ -7,11 +7,11 @@ A simple tool for parsing AWS S3 access logs. Can either be used from Python or 
 Installation
 ------------
 
-Download this repo and run
+Use pip
 
 .. code:: console
 
-  python3 setup.py install
+  pip install s3-log-parse
 
 
 Command Line usage

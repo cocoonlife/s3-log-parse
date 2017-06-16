@@ -7,11 +7,7 @@ def raw_fields(line):
     Iterate through the raw text of each field in a log line
     """
     line_chars = (c for c in line)
-    while True:
-        try:
-            first_char = next(line_chars)
-        except StopIteration:
-            break
+    for first_char in line_chars:
         if first_char == '[':
             yield ''.join(takewhile(lambda c: c != ']', line_chars))
             next(line_chars)

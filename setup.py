@@ -8,7 +8,7 @@ setup(
     name='s3-log-parse',
     version="0.1.0",
     description="Tool for procesing AWS S3 access logs",
-    url="https://github.com/robert-b-clarke/s3-log-parse",
+    url="https://github.com/cocoonlife/s3-log-parse",
     author="Rob Clarke",
     author_email='rob.clarke@cocoon.life',
     packages=find_packages(),

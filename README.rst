@@ -50,7 +50,7 @@ Here is a simple example which extracts IP addresses from logs
   from s3logparse import s3logparse
 
   with open('mys3logs.txt') as fh:
-      for log_entry in parse_log_lines(fh.readlines()):
+      for log_entry in s3logparse.parse_log_lines(fh.readlines()):
           print(log_entry.ip_address)
 
 

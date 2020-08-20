@@ -2,6 +2,7 @@ from itertools import takewhile, chain
 from datetime import datetime
 from collections import namedtuple
 import pytz
+import re
 
 
 LogLine = namedtuple('LogLine', [
@@ -22,13 +23,12 @@ def raw_fields(line):
             yield ''.join(takewhile(lambda c: c != ']', line_chars))
             next(line_chars)
         elif first_char == '"':
-            yield ''.join(takewhile(lambda c: c != '"', line_chars))
+            yield ''.join(takewhile(lambda c: c != '"' , line_chars))
             next(line_chars)
         else:
             yield first_char + ''.join(
                 list(takewhile(lambda c: c != ' ', line_chars))
             )
-
 
 def shift_string_fields(fields, n):
     """
@@ -65,7 +65,8 @@ def parse_to_tuples(line_iter):
     """
     # define a generator that inflates each field
     for line in line_iter:
-        field_iter = raw_fields(line.rstrip())
+        new_line = re.sub(r'(?<!^)(?<! )"(?! |$)', '', line)
+        field_iter = raw_fields(new_line.rstrip())
         # unpack each field into appropriate data type
         row = tuple(chain.from_iterable([
             shift_string_fields(field_iter, 2),

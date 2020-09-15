@@ -23,7 +23,7 @@ def raw_fields(line):
             yield ''.join(takewhile(lambda c: c != ']', line_chars))
             next(line_chars)
         elif first_char == '"':
-            yield ''.join(takewhile(lambda c: c != '"' , line_chars))
+            yield ''.join(takewhile(lambda c: c != '"', line_chars))
             next(line_chars)
         else:
             yield first_char + ''.join(
@@ -65,7 +65,7 @@ def parse_to_tuples(line_iter):
     """
     # define a generator that inflates each field
     for line in line_iter:
-        new_line = re.sub(r'(?<!^)(?<! )"(?! |$)', '', line)
+        new_line = re.sub(r'(?<!^)(?<! )(?<!")"(?!")(?!"|$)', '', line)
         field_iter = raw_fields(new_line.rstrip())
         # unpack each field into appropriate data type
         row = tuple(chain.from_iterable([

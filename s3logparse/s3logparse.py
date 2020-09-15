@@ -65,7 +65,8 @@ def parse_to_tuples(line_iter):
     """
     # define a generator that inflates each field
     for line in line_iter:
-        new_line = re.sub(r'(?<!^)(?<! )(?<!")"(?!")(?! |$)', '', line)
+        first_new_line = re.sub(r'(?<!^)(?<! )(?<!")"(?! |$)', '', line)
+        new_line = re.sub(r'(?<!^)"(?= H|$)', '', first_new_line)
         field_iter = raw_fields(new_line.rstrip())
         # unpack each field into appropriate data type
         row = tuple(chain.from_iterable([

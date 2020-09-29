@@ -36,14 +36,20 @@ def shift_string_fields(fields, n):
     """
     for _ in range(n):
         s = next(fields)
-        yield None if s == '-' else s
+        try:
+            yield None if s == '-' else s
+        except StopIteration:
+            yield None
 
 
 def shift_int_fields(fields, n):
     for _ in range(n):
         i = next(fields)
         # for numeric fields "-" is used for 0
-        yield 0 if i == '-' else int(i)
+        try:
+            yield 0 if i == '-' else int(i)
+        except StopIteration:
+            yield None
 
 
 def shift_date_fields(fields, n):

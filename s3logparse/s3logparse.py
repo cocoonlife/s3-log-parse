@@ -73,6 +73,8 @@ def parse_to_tuples(line_iter):
         first_new_line = re.sub(r'(?<!^)(?<! )(?<!")"(?! |$)', '', line)
         new_line = re.sub(r'(?<!^)"(?= H|$)', '', first_new_line)
         field_iter = raw_fields(new_line.rstrip())
+        data = [c for c in field_iter]
+        print(data)
         # unpack each field into appropriate data type
         row = tuple(chain.from_iterable([
             shift_string_fields(field_iter, 2),

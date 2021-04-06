@@ -20,23 +20,32 @@ def raw_fields(line):
     line_chars = (c for c in line)
     for first_char in line_chars:
         if first_char == '[':
-            yield ''.join(takewhile(lambda c: c != ']', line_chars))
-            next(line_chars)
+            try:
+                yield ''.join(takewhile(lambda c: c != ']', line_chars))
+                next(line_chars)
+            except StopIteration:
+                return
         elif first_char == '"':
-            yield ''.join(takewhile(lambda c: c != '"', line_chars))
-            next(line_chars)
+            try:
+                yield ''.join(takewhile(lambda c: c != '"', line_chars))
+                next(line_chars)
+            except StopIteration:
+                return
         else:
-            yield first_char + ''.join(
-                list(takewhile(lambda c: c != ' ', line_chars))
-            )
+            try:
+                yield first_char + ''.join(
+                    list(takewhile(lambda c: c != ' ', line_chars))
+                )
+            except StopIteration:
+                return
 
 def shift_string_fields(fields, n):
     """
     Process n string fields and convert to None if they're empty
     """
     for _ in range(n):
-        s = next(fields)
         try:
+            s = next(fields)
             yield None if s == '-' else s
         except StopIteration:
             yield None
@@ -44,9 +53,9 @@ def shift_string_fields(fields, n):
 
 def shift_int_fields(fields, n):
     for _ in range(n):
-        i = next(fields)
         # for numeric fields "-" is used for 0
         try:
+            i = next(fields)
             yield 0 if i == '-' else int(i)
         except StopIteration:
             yield None
@@ -54,8 +63,8 @@ def shift_int_fields(fields, n):
 
 def shift_date_fields(fields, n):
     for _ in range(n):
-        d = next(fields)
         try:
+            d = next(fields)
             yield datetime.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
         except ValueError:
             # python2 doesn't understand %z modifier

@@ -33,7 +33,7 @@ def shift_string_fields(fields, n):
     Process n string fields and convert to None if they're empty
     """
     for _ in range(n):
-        # s = next(fields)
+        s = next(fields)
         try:
             yield None if s == '-' else s
         except StopIteration:
@@ -42,7 +42,7 @@ def shift_string_fields(fields, n):
 
 def shift_int_fields(fields, n):
     for _ in range(n):
-        # i = next(fields)
+        i = next(fields)
         # for numeric fields "-" is used for 0
         try:
             yield 0 if i == '-' else int(i)
@@ -52,7 +52,7 @@ def shift_int_fields(fields, n):
 
 def shift_date_fields(fields, n):
     for _ in range(n):
-        # d = next(fields)
+        d = next(fields)
         try:
             yield datetime.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
         except ValueError:
@@ -72,8 +72,6 @@ def parse_to_tuples(line_iter):
         first_new_line = re.sub(r'(?<!^)(?<! )(?<!")"(?! |$)', '', line)
         new_line = re.sub(r'(?<!^)"(?= H|$)', '', first_new_line)
         field_iter = raw_fields(new_line.rstrip())
-        data = [c for c in field_iter]
-        print(data)
         # unpack each field into appropriate data type
         row = tuple(chain.from_iterable([
             shift_string_fields(field_iter, 2),

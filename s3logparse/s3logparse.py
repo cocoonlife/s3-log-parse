@@ -27,7 +27,6 @@ def raw_fields(line):
             yield first_char + ''.join(
                 list(takewhile(lambda c: c != ' ', line_chars))
             )
-        next(line_chars)
 
 def shift_string_fields(fields, n):
     """

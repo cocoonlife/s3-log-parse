@@ -33,7 +33,7 @@ def shift_string_fields(fields, n):
     Process n string fields and convert to None if they're empty
     """
     for _ in range(n):
-        s = next(fields)
+        # s = next(fields)
         try:
             yield None if s == '-' else s
         except StopIteration:
@@ -42,7 +42,7 @@ def shift_string_fields(fields, n):
 
 def shift_int_fields(fields, n):
     for _ in range(n):
-        i = next(fields)
+        # i = next(fields)
         # for numeric fields "-" is used for 0
         try:
             yield 0 if i == '-' else int(i)
@@ -52,7 +52,7 @@ def shift_int_fields(fields, n):
 
 def shift_date_fields(fields, n):
     for _ in range(n):
-        d = next(fields)
+        # d = next(fields)
         try:
             yield datetime.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
         except ValueError:

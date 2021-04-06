@@ -18,18 +18,18 @@ def raw_fields(line):
     Iterate through the raw text of each field in a log line
     """
     line_chars = (c for c in line)
-    print(line_chars)
     for first_char in line_chars:
         if first_char == '[':
             yield ''.join(takewhile(lambda c: c != ']', line_chars))
-            next(line_chars)
         elif first_char == '"':
             yield ''.join(takewhile(lambda c: c != '"', line_chars))
-            next(line_chars)
         else:
             yield first_char + ''.join(
                 list(takewhile(lambda c: c != ' ', line_chars))
             )
+        next(line_chars, "")
+
+
 
 def shift_string_fields(fields, n):
     """

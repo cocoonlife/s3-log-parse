@@ -8,7 +8,9 @@ LogLine = namedtuple('LogLine', [
     'bucket_owner', 'bucket', 'timestamp', 'remote_ip', 'requester',
     'request_id', 'operation', 's3_key', 'request_uri', 'status_code',
     'error_code', 'bytes_sent', 'object_size', 'total_time',
-    'turn_around_time', 'referrer', 'user_agent', 'version_id'
+    'turn_around_time', 'referrer', 'user_agent', 'version_id',
+    'host_id', 'signature_version', 'cipher_suite', 'authentication_type',
+    'host_header', 'tls_version', 'access_point_arn', 'acl_required'
 ])
 
 
@@ -74,7 +76,8 @@ def parse_to_tuples(line_iter):
             shift_int_fields(field_iter, 1),
             shift_string_fields(field_iter, 1),
             shift_int_fields(field_iter, 4),
-            shift_string_fields(field_iter, 3)
+            shift_string_fields(field_iter, 3),
+            shift_string_fields(field_iter, 8)
         ]))
         yield row
 

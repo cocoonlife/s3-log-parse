@@ -6,7 +6,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='s3-log-parse',
-    version="0.1.1",
+    version="0.1.2",
     description="Tool for procesing AWS S3 access logs",
     url="https://github.com/cocoonlife/s3-log-parse",
     author="Rob Clarke",

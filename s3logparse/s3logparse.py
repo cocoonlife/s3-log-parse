@@ -10,7 +10,7 @@ LogLine = namedtuple('LogLine', [
     'error_code', 'bytes_sent', 'object_size', 'total_time',
     'turn_around_time', 'referrer', 'user_agent', 'version_id',
     'host_id', 'signature_version', 'cipher_suite', 'authentication_type',
-    'host_header', 'tls_version', 'access_point_arn', 'acl_required'
+    'host_header', 'tls_version', 'access_point_arn', 'acl_required', 'file_name'
 ])
 
 
@@ -82,10 +82,10 @@ def parse_to_tuples(line_iter):
         yield row
 
 
-def parse_log_lines(line_iter):
+def parse_log_lines(line_iter, file_name=""):
     """
     Parse log lines from an iterable and return LogLine objects with
     appropriate accessors
     """
     for line_tuple in parse_to_tuples(line_iter):
-        yield LogLine(*line_tuple)
+        yield LogLine(*line_tuple, file_name)

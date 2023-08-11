@@ -51,7 +51,8 @@ class LineParserTupleTest(TestCase):
 8eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:00:38 +0000] 192.0.2.3 79a59\
 df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 3E57427F3EXAMPLE \
 REST.GET.VERSIONING - "GET /mybucket?versioning HTTP/1.1" 200 - 113 - 7 - "-" \
-"S3Console/0.4" -'
+"S3Console/0.4" - EXAfPIQ4LEOWDMQM+ey7A9XgZhWnQ2JMAXIFOURb7hASDFGH+Jd1vEXPLEAMa3Km= \
+SigV4 ECDHE-RSA-AES128-GCM-SHA256 AuthHeader bucket-name.s3.amazonaws.com TLSv1.2 - -'
         ])
         self.log_fields = next(log_stream)
 
@@ -75,7 +76,7 @@ REST.GET.VERSIONING - "GET /mybucket?versioning HTTP/1.1" 200 - 113 - 7 - "-" \
         """
         int_fields = list(itertools.compress(
             self.log_fields,
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0]
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ))
         self.assertEqual(
             int_fields,
@@ -88,7 +89,7 @@ REST.GET.VERSIONING - "GET /mybucket?versioning HTTP/1.1" 200 - 113 - 7 - "-" \
         """
         str_fields = itertools.compress(
             self.log_fields,
-            [1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+            [1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0]
         )
         for s in str_fields:
             self.assertIsInstance(s, str)
@@ -99,9 +100,9 @@ REST.GET.VERSIONING - "GET /mybucket?versioning HTTP/1.1" 200 - 113 - 7 - "-" \
         """
         none_fields = list(itertools.compress(
             self.log_fields,
-            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1]
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1]
         ))
-        self.assertEqual(none_fields, [None] * 4)
+        self.assertEqual(none_fields, [None] * 6)
 
 
 class LogLineParserTests(TestCase):
@@ -115,7 +116,8 @@ class LogLineParserTests(TestCase):
 8eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:00:38 +0000] 192.0.2.3 79a59\
 df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 3E57427F3EXAMPLE \
 REST.GET.VERSIONING - "GET /mybucket?versioning HTTP/1.1" 200 - 113 - 7 - "-" \
-"S3Console/0.4" -'
+"S3Console/0.4" - EXAfPIQ4LEOWDMQM+ey7A9XgZhWnQ2JMAXIFOURb7hASDFGH+Jd1vEXPLEAMa3Km= \
+SigV4 ECDHE-RSA-AES128-GCM-SHA256 AuthHeader bucket-name.s3.amazonaws.com TLSv1.2 - -'
         ])
         log_line = next(log_stream)
         self.assertEqual(
@@ -188,5 +190,37 @@ REST.GET.VERSIONING - "GET /mybucket?versioning HTTP/1.1" 200 - 113 - 7 - "-" \
         )
         self.assertEqual(
             log_line.version_id,
+            None
+        )
+        self.assertEqual(
+            log_line.host_id,
+            'EXAfPIQ4LEOWDMQM+ey7A9XgZhWnQ2JMAXIFOURb7hASDFGH+Jd1vEXPLEAMa3Km='
+        )
+        self.assertEqual(
+            log_line.signature_version,
+            'SigV4'
+        )
+        self.assertEqual(
+            log_line.cipher_suite,
+            'ECDHE-RSA-AES128-GCM-SHA256'
+        )
+        self.assertEqual(
+            log_line.authentication_type,
+            'AuthHeader'
+        )
+        self.assertEqual(
+            log_line.host_header,
+            'bucket-name.s3.amazonaws.com'
+        )
+        self.assertEqual(
+            log_line.tls_version,
+            'TLSv1.2'
+        )
+        self.assertEqual(
+            log_line.access_point_arn,
+            None
+        )
+        self.assertEqual(
+            log_line.acl_required,
             None
         )
